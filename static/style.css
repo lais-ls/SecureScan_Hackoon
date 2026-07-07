@@ -3,13 +3,16 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
-    --cor-fundo: #0f172a;
-    --cor-primaria: #06b6d4;
-    --cor-secundaria: #1e293b;
+    --cor-fundo: #0e0514;
+    --cor-primaria: #a855f7;
+    --cor-primaria-glow: rgba(168, 85, 247, 0.35);
+    --cor-secundaria: #130b24;
+    --cor-texto-suave: #cbd5e1;
 }
 
 body {
-    background: radial-gradient(circle at top, rgba(30, 58, 138, 0.4) 0%, rgba(15, 23, 42, 0.85) 40%), url('img/Fundo.jpg') no-repeat center center fixed;
+    background: radial-gradient(circle at top, rgba(61, 20, 138, 0.5) 0%, var(--cor-fundo) 50%), 
+                url('img/Fundo.jpg') no-repeat center center fixed;
     background-size: cover;
     color: white;
     min-height: 100vh;
@@ -38,7 +41,7 @@ header {
 }
 
 .subtitle {
-    color: var(--cor-primaria);
+    color: var(--cor-texto-suave);
     font-size: 1.65rem;
     text-transform: uppercase;
     font-weight: bold;
@@ -52,11 +55,11 @@ main {
 }
 
 .busca {
-    background: rgba(30, 41, 59, 0.85);
+    background: rgba(19, 11, 36, 0.85);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(6, 182, 212, 0.2);
+    border: 1px solid rgba(168, 85, 247, 0.2);
     border-radius: 20px;
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.1);
     transition: 0.3s;
     padding: 2rem;
     border-radius: 15px;
@@ -66,12 +69,12 @@ main {
 }
 
 .busca h2 {
-    color: var(--cor-primaria);
+    color: #ffffff;
     font-size: 1.8rem;
 }
 
 .busca p {
-    color: #cbd5e1;
+    color: var(--cor-texto-suave);
 }
 
 .busca-form {
@@ -83,16 +86,16 @@ main {
 .busca-form_input {
     flex: 1;
     padding: 1rem;
-    border: 1px solid #334155;
+    border: 1px solid #2e1a4d;
     border-radius: 10px;
-    background-color: var(--cor-fundo);
+    background-color: #06030e;
     color: white;
 }
 
 .busca-form_input:focus {
     outline: none;
     border-color: var(--cor-primaria);
-    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+    box-shadow: 0 0 10px rgba(--cor-primaria-glow);
 }
 
 .busca-form_btn {
@@ -104,23 +107,23 @@ main {
     font-weight: bold;
     color: white;
     cursor: pointer;
-    background: linear-gradient(135deg, var(--cor-primaria), #3b82f6);
+    background: linear-gradient(135deg, var(--cor-primaria), #7c3aed);
     transition: 0.3s;
     text-transform: uppercase;
 }
 
 .busca-form_btn:hover {
     transform: scale(1.03);
-    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    box-shadow: 0 0 10px var(--cor-primaria-glow);
 }
 
 .relatorio {
     margin-top: 2rem;
-    background: rgba(30, 41, 59, 0.85);
+    background: rgba(19, 11, 36, 0.85);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(6, 182, 212, 0.2);
+    border: 1px solid rgba(168, 85, 247, 0.15);
     border-radius: 20px;
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+    box-shadow: 0 0 20px rgba(108, 52, 176, 0.4);
     transition: 0.3s;
     padding: 2rem;
     border-radius: 15px;
@@ -156,10 +159,10 @@ main {
 .footer {
     margin-top: 3rem;
     padding: 1.5rem;
-    border-top: 1px solid rgba(255,255,255,.1);
+    border-top: 1px solid rgba(168, 85, 247, 0.08);
     backdrop-filter: blur(10px);
     text-align: center;
-    color: #94a3b8;
+    color: #795e92;
 }
 
 .footer p {
