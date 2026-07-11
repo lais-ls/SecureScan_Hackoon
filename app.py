@@ -1,9 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import requests
 
-API_KEY = "SUA_CHAVE_AQUI"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+API_KEY = os.getenv("GOOGLE_API_KEY")
 
 app = Flask(__name__)
+
+app.secret_key = "chaveSecreta"
 
 def verificar_safe_browsing(url): #safe browsing
     endpoint = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={API_KEY}"
@@ -48,8 +54,8 @@ def verificar_https(url):
         return "inativo"
     
 
-import whois
-from datetime import datetime
+import requests
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 def verificar_idade_dominio(url):
@@ -58,24 +64,38 @@ def verificar_idade_dominio(url):
             url = "https://" + url
 
         dominio = urlparse(url).netloc
-        dados = whois.whois(dominio)
 
-        data_criacao = dados.creation_date
+        # remove "www." se tiver, e pega só o domínio raiz simplificado
+        dominio = dominio.replace("www.", "")
 
-        if isinstance(data_criacao, list):
-            data_criacao = data_criacao[0]
+        resposta = requests.get(f"https://rdap.org/domain/{dominio}", timeout=5)
+
+        if resposta.status_code != 200:
+            return "desconhecido", None
+
+        dados = resposta.json()
+
+        data_criacao = None
+        for evento in dados.get("events", []):
+            if evento.get("eventAction") == "registration":
+                data_criacao = evento.get("eventDate")
+                break
 
         if not data_criacao:
             return "desconhecido", None
 
-        idade_anos = (datetime.now() - data_criacao).days / 365
+        data_criacao_dt = datetime.fromisoformat(data_criacao.replace("Z", "+00:00"))
+        agora = datetime.now(timezone.utc)
+
+        idade_anos = (agora - data_criacao_dt).days / 365
 
         if idade_anos >= 2:
             return "bom", idade_anos
         else:
             return "suspeito", idade_anos
 
-    except:
+    except Exception as e:
+        print("ERRO RDAP:", e)
         return "erro", None
     
 import ssl
@@ -120,21 +140,181 @@ def verificar_certificado(url):
     except Exception as e:
         print(e)
         return "erro", None, None
+    
+def verificar_headers(url):
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    try:
+        resposta = requests.get(url, timeout=5)
+        headers = resposta.headers
+
+        pontos = 0
+        detalhes = {}
+
+        # HSTS - 6 pts
+        hsts = headers.get("Strict-Transport-Security")
+        if hsts:
+            pontos += 6
+            detalhes["hsts"] = ("presente", hsts)
+        else:
+            detalhes["hsts"] = ("ausente", None)
+
+        # CSP - 8 pts (parcial se tiver unsafe-inline/unsafe-eval liberado)
+        csp = headers.get("Content-Security-Policy")
+        if csp:
+            if "unsafe-inline" in csp or "unsafe-eval" in csp:
+                pontos += 4
+                detalhes["csp"] = ("presente_fraco", csp)
+            else:
+                pontos += 8
+                detalhes["csp"] = ("presente", csp)
+        else:
+            detalhes["csp"] = ("ausente", None)
+
+        # X-Frame-Options ou frame-ancestors no CSP - 4 pts
+        xfo = headers.get("X-Frame-Options")
+        frame_ancestors = csp and "frame-ancestors" in csp
+        if xfo or frame_ancestors:
+            pontos += 4
+            detalhes["clickjacking"] = ("protegido", xfo or "frame-ancestors no CSP")
+        else:
+            detalhes["clickjacking"] = ("desprotegido", None)
+
+        # X-Content-Type-Options - 3 pts
+        xcto = headers.get("X-Content-Type-Options")
+        if xcto and xcto.lower() == "nosniff":
+            pontos += 3
+            detalhes["xcto"] = ("presente", xcto)
+        else:
+            detalhes["xcto"] = ("ausente", None)
+
+        # Referrer-Policy - 2 pts
+        rp = headers.get("Referrer-Policy")
+        if rp:
+            pontos += 2
+            detalhes["referrer_policy"] = ("presente", rp)
+        else:
+            detalhes["referrer_policy"] = ("ausente", None)
+
+        # Permissions-Policy - 2 pts
+        pp = headers.get("Permissions-Policy")
+        if pp:
+            pontos += 2
+            detalhes["permissions_policy"] = ("presente", pp)
+        else:
+            detalhes["permissions_policy"] = ("ausente", None)
+
+        return pontos, detalhes  # pontos vai de 0 a 25
+
+    except:
+        return 0, {}
+    
+def verificar_servidor(url):
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    try:
+        resposta = requests.get(url, timeout=5)
+        server_header = resposta.headers.get("Server", "")
+        powered_by = resposta.headers.get("X-Powered-By", "")
+
+        pontos = 0
+        detalhes = {}
+
+        # Server não expõe versão detalhada - 5 pts
+        expoe_versao = any(char.isdigit() for char in server_header)
+        if not server_header or not expoe_versao:
+            pontos += 5
+            detalhes["server_header"] = ("oculto", server_header or "não informado")
+        else:
+            detalhes["server_header"] = ("exposto", server_header)
+
+        # X-Powered-By não presente (também vaza stack) - 5 pts
+        if not powered_by:
+            pontos += 5
+            detalhes["x_powered_by"] = ("oculto", None)
+        else:
+            detalhes["x_powered_by"] = ("exposto", powered_by)
+
+        return pontos, detalhes  # pontos vai de 0 a 10
+
+    except:
+        return 0, {}
+
+def calcular_pontuacao(safe_status, https_status, cert_status, dias_restantes,
+                        idade_status, pontos_headers, pontos_servidor):
+
+    # --- Safe Browsing: 30 pts + corte crítico ---
+    pontos_safe = 30 if safe_status == "seguro" else 0
+
+    # --- HTTPS + SSL: 25 pts ---
+    pontos_https_ssl = 0
+    if https_status == "ativo":
+        pontos_https_ssl += 10
+        if cert_status == "valido":
+            pontos_https_ssl += 10
+            if dias_restantes and dias_restantes > 30:
+                pontos_https_ssl += 5
+            else:
+                pontos_https_ssl += 2  # válido mas prestes a vencer
+
+    # --- Idade do domínio: 10 pts ---
+    pontos_idade = {"bom": 10, "suspeito": 4}.get(idade_status, 2)
+
+    total = (pontos_safe + pontos_https_ssl + pontos_headers +
+              pontos_idade + pontos_servidor)
+
+    # --- Corte crítico: Safe Browsing perigoso trava o score ---
+    if safe_status != "seguro":
+        total = min(total, 15)
+
+    total = max(0, min(100, total))
+
+    if total >= 90:
+        classificacao = "Excelente"
+    elif total >= 70:
+        classificacao = "Bom"
+    elif total >= 50:
+        classificacao = "Regular"
+    elif total >= 25:
+        classificacao = "Fraco"
+    else:
+        classificacao = "Crítico"
+
+    return total, classificacao
 
 
 @app.route("/") #lê e exibe uma página em html
 def home():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        historico=session.get("historico", [])
+    )
 
 
 @app.route("/analisar", methods=["POST"]) #recebe url, testa segurança e mostra o resultado
 def analisar():
     url = request.form["url"]
 
+    historico = session.get("historico", []) # começo do histórico
+    if url in historico:
+        historico.remove(url)
+    historico.insert(0, url)
+    historico = historico[:5]
+    session["historico"] = historico
+
     status = verificar_safe_browsing(url)
     https_status = verificar_https(url)
     idade_status, idade_anos = verificar_idade_dominio(url)
     cert_status, cert_validade, dias_restantes = verificar_certificado(url)
+    pontos_headers, headers_detalhes = verificar_headers(url)
+    pontos_servidor, servidor_detalhes = verificar_servidor(url)
+
+    score, classificacao = calcular_pontuacao(
+        status, https_status, cert_status, dias_restantes,
+        idade_status, pontos_headers, pontos_servidor
+    )
 
     return render_template(
         "index.html",
@@ -142,7 +322,13 @@ def analisar():
         status=status, idade_status=idade_status, https_status=https_status, idade_anos=idade_anos,
         cert_status=cert_status,
         cert_validade=cert_validade,
-        dias_restantes=dias_restantes
+        dias_restantes=dias_restantes, 
+        pontos_headers=pontos_headers,
+        headers_detalhes=headers_detalhes,
+        servidor_detalhes=servidor_detalhes, score=score, 
+        classificacao=classificacao, 
+        pontos_servidor=pontos_servidor,
+        historico=session.get("historico", [])
     )
 
 

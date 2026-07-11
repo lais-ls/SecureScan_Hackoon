@@ -212,3 +212,33 @@ summary {
 .check.negativo summary .simbolo{
     color: #660000; 
 }
+
+.historico{
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.titulo-historico{
+    color: var(--cor-texto-suave);
+    font-weight: bold;
+}
+
+.historico-form{
+    margin: 0;
+}
+
+.historico-form button{
+    background: transparent;
+    border: none;
+    color: var(--cor-primaria);
+    cursor: pointer;
+    font-size: .95rem;
+    text-decoration: underline;
+}
+
+.historico-form button:hover{
+    color: white;
+}
