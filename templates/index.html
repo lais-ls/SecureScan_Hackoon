@@ -59,19 +59,22 @@
 
                 <div class="painel-dashboard">
                   <div class="painel-esquerda">
+                    <!-- GOOGLE SAFE BROWSING -->
                     <div class="check {{ 'positivo' if status == 'seguro' else 'negativo' }}">
                         <details>
                             <summary style="cursor: pointer; outline: none;">
                                 <span class="simbolo">{{ '✓' if status == 'seguro' else '✗' }}</span>
-                                Google Safe Browsing: {{ 'Nenhuma ameaça encontrada' if status == 'seguro' else 'Site listado como ameaça' }}
-                                <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 5px;">(Clique para saber mais)</span>
+                                <span class="titulo-check">
+                                    {{ 'Nenhuma ameaça identificada pelo Safe Browsing' if status == 'seguro' else 'Site listado como ameaça pelo Safe Browsing' }}
+                                </span>
+                                <span class="seta">▼</span>
                             </summary>
-                            <div class="explicao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
+                            <div class="explicacao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
                                 {% if status == "seguro" %}
-                                    <p>Este site não consta nas listas de ameaças do Google, que incluem malware, phishing e software indesejado.</p>
+                                    <p>Este site não consta nas listas de ameaças do Google Safe Browsing, que incluem malware, phishing e software indesejado.</p>
                                 {% else %}
-                                    <p>Este site foi identificado pelo Google como uma ameaça ativa (malware, phishing ou software indesejado).</p>
-                                    <p><strong>Sugestão:</strong> Não insira nenhum dado neste site e evite continuar a navegação.</p>
+                                    <p>Esse site já foi <span class="termo-chave">denunciado e confirmado</span> pelo Google como fonte de malware, phishing ou algum outro tipo de golpe.</p>
+                                    <p><span class="negrito">Recomendação:</span> Não insira nenhum dado neste site e evite continuar a navegação.</p>
                                 {% endif %}
                             </div>
                         </details>
@@ -83,15 +86,15 @@
                             <summary style="cursor: pointer; outline: none;">
                                 <span class="simbolo">{{ '✓' if https_status == 'ativo' else '✗' }} </span>
                                 HTTPS: {{ 'Presente' if https_status == 'ativo' else 'Não presente' }} 
-                                <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 5px; letter-spacing: 1px;">(Clique para saber mais)</span>
+                                <span class="seta">▼</span>
                             </summary>
                             
-                            <div class="explicao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
+                            <div class="explicacao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
                                 {% if https_status == 'ativo' %}
-                                    <p>Por que isso é bom? O HTTPS indica que a comunicação entre você e este site é criptografada. Isso impede que criminosos interceptem seus dados (como senhas ou cartões) no caminho.</p>
+                                    <p>O <span class="termo-chave">HTTPS</span> criptografa tudo que passa entre o seu navegador e o site. Isso faz com que outras pessoas vejam seus dados (como senhas ou cartões) embaralhados, não em texto puro.</p>
                                 {% else %}
-                                    <p>Por que isso é perigoso? Sem o HTTPS, qualquer dado que você digitar neste site trafega pela internet em texto puro. Qualquer pessoa na mesma rede (como um Wi-Fi público) pode espionar o que você está fazendo.</p>
-                                    <p>Sugestão: Evite inserir senhas, dados bancários ou informações pessoais neste site. Sempre prefira versões que utilizem HTTPS para garantir que seus dados sejam transmitidos de forma segura.</p>
+                                    <p>Sem <span class="termo-chave">HTTPS</span>, os dados trafegam sem nenhuma proteção. Qualquer pessoa na mesma rede pode espionar o que você está fazendo.</p>
+                                    <p><span class="negrito">Recomendação:</span> Evite inserir senhas, dados bancários ou informações pessoais neste site.</p>
                                     {% endif %}
                             </div>
                         </details>
@@ -115,30 +118,31 @@
                                 {% else %}
                                     Erro ao verificar certificado
                                 {% endif %}
+                                <span class="seta">▼</span>
                             </summary>
 
-                            <div style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
+                            <div class="explicacao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
                                 {% if cert_status == 'valido' %}
-                                    <p>O certificado SSL garante que a comunicação entre o usuário e o site é criptografada e segura. Ele também confirma que o site é quem diz ser.</p>
-                                    <p><strong>Sugestão:</strong> Mesmo com certificado válido, sempre verifique se o domínio está correto antes de inserir dados sensíveis.</p>
+                                    <p>O <span class="termo-chave">certificado SSL</span> funciona como um documento de identidade do site. Ele autentica o domínio e garante que a comunicação entre o usuário e o servidor seja criptografada e segura por meio do HTTPS. Este certificado está dentro da validade.</p>
+                                    <p><span class="negrito">Recomendação:</span> Mesmo com certificado válido, sempre verifique se o domínio está correto antes de inserir dados sensíveis.</p>
                                 {% elif cert_status == 'vencido' %}
-                                    <p>Um certificado vencido indica que a segurança do site não está mais atualizada. Navegar ou inserir dados aqui pode não ser seguro.</p>
-                                    <p><strong>Sugestão:</strong> Evite inserir informações pessoais ou continuar navegação neste site.</p>
+                                    <p>Um <span class="termo-chave">certificado</span> vencido indica que a segurança do site não está mais atualizada. Pode indicar um site abandonado ou mal cuidado.</p>
+                                    <p><span class="negrito">Recomendação:</span> Melhor não inserir informações pessoais até isso ser corrigido.</p>
                                 {% elif cert_status == 'invalido' %}
-                                    <p>Um certificado inválido pode indicar tentativa de fraude ou configuração incorreta de segurança.</p>
-                                    <p><strong>Sugestão:</strong> Não prossiga neste site e evite qualquer tipo de login ou pagamento.</p>
+                                    <p>Um <span class="termo-chave">certificado inválido</span> pode indicar tentativa de fraude ou configuração incorreta de segurança.</p>
+                                    <p><span class="negrito">Recomendação:</span> Não continue navegando e evite qualquer tipo de login ou pagamento.</p>
                                 {% elif cert_status == 'sem_ssl' %}
-                                    <p>Este site não utiliza SSL, ou seja, a comunicação não é criptografada.</p>
-                                    <p><strong>Sugestão:</strong> Evite enviar qualquer informação pessoal ou sensível.</p>
+                                    <p>Este site não utiliza <span class="termo-chave">certificado SSL</span>, ou seja, a comunicação não é criptografada.</p>
+                                    <p><span class="negrito">Recomendação:</span> Tudo o que digitar pode ser visto por terceiros, então evite informações sensíveis.</p>
                                 {% else %}
-                                    <p>Não foi possível verificar o certificado deste site.</p>
-                                    <p><strong>Sugestão:</strong> Tente novamente mais tarde ou evite continuar a navegação.</p>
+                                    <p>Não foi possível verificar o <span class="termo-chave">certificado</span> deste site.</p>
+                                    <p><span class="negrito">Sugestão:</span> Tente novamente mais tarde ou evite continuar a navegação.</p>
                                 {% endif %}
                             </div>
                         </details>
                 </div>
 
-                    <!-- Idade do domínio -->
+                    <!-- IDADE DO DOMÍNIO -->
                 <div class="check {{ 'positivo' if idade_status == 'bom' else 'negativo' }}">
                     <details>
                         <summary style="cursor: pointer; outline: none;">
@@ -152,16 +156,16 @@
                             {% else %}
                                 Não foi possível verificar a idade do domínio
                             {% endif %}
-                            <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 5px;">(Clique para saber mais)</span>
+                            <span class="seta">▼</span>
                         </summary>
-                        <div class="explicao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
+                        <div class="explicacao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
                             {% if idade_status == 'bom' %}
-                                <p>Domínios mais antigos costumam ter maior credibilidade, já que sites maliciosos geralmente são registrados recentemente e trocados com frequência.</p>
+                                <p>Esse domínio já existe há um tempo considerável. Isso importa porque <span class="termo-chave">sites maliciosos</span> geralmente são registrados recentemente e trocados com frequência.</p>
                             {% elif idade_status == 'suspeito' %}
-                                <p>Domínios muito novos não são necessariamente perigosos, mas golpes e sites de phishing costumam usar domínios registrados há pouco tempo.</p>
-                                <p><strong>Sugestão:</strong> Redobre a atenção antes de inserir dados pessoais ou financeiros.</p>
+                                <p>Esse domínio foi registrado <span class="termo-chave">recentemente</span>. Domínios muito novos não são necessariamente perigosos, mas golpes e sites de phishing costumam usar domínios registrados há pouco tempo.</p>
+                                <p><span class="negrito">Recomendação:</span> Redobre a atenção antes de inserir dados pessoais ou financeiros.</p>
                             {% else %}
-                                <p>Não conseguimos confirmar há quanto tempo esse domínio existe.</p>
+                                <p>Não conseguimos confirmar há quanto tempo esse domínio existe. Alguns domínios escondem essa informação por <span class="termo-chave">privacidade</span> (o que é legítimo e comum), então isso sozinho não é motivo pra desconfiar.</p>
                             {% endif %}
                         </div>
                     </details>
@@ -172,76 +176,76 @@
                         <details>
                             <summary style="cursor: pointer; outline: none;">
                                 <span class="simbolo">{{ '✓' if pontos_headers >= 15 else '✗' }}</span>
-                                Headers de Segurança: {{ pontos_headers }}/25 pontos
-                                <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 5px;">(Clique para saber mais)</span>
+                                {{ 'Headers de segurança bem configurados' if pontos_headers >= 15 else 'Headers de segurança incompletos' }}
+                                <span class="seta">▼</span>
                             </summary>
 
-                            <div class="explicao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
+                            <div class="explicacao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
                                 <p>
-                                    <strong>HSTS:</strong>
-                                    {{ 'Presente' if headers_detalhes.hsts[0] == 'presente' else 'Ausente' }}
-                                    — Força conexões via HTTPS, evitando downgrade para HTTP.
+                                    <span class="termo-chave">HSTS</span>
+                                    {{ 'presente' if headers_detalhes.hsts[0] == 'presente' else 'ausente' }}.
+                                    Força a sempre usar o HTTPS, evitando downgrade para HTTP.
                                 </p>
                                 <p>
-                                    <strong>CSP (Content-Security-Policy):</strong>
+                                    <span class="termo-chave">CSP</span> (Content-Security-Policy)
                                     {% if headers_detalhes.csp[0] == 'presente' %}
-                                        Presente e bem configurado
+                                        presente e bem configurado.
                                     {% elif headers_detalhes.csp[0] == 'presente_fraco' %}
-                                        Presente, mas com configuração permissiva (unsafe-inline/unsafe-eval)
+                                        presente, mas com configuração permissiva.
                                     {% else %}
-                                        Ausente
+                                        ausente.
                                     {% endif %}
-                                    — Reduz o risco de ataques como XSS (injeção de scripts maliciosos).
+                                    Basicamente, é uma lista de fontes de conteúdo confiáveis, reduzindo o risco de ataques como <span class="termo-chave">XSS</span> (injeção de scripts maliciosos).
                                 </p>
                                 <p>
-                                    <strong>Proteção contra Clickjacking:</strong>
-                                    {{ 'Presente' if headers_detalhes.clickjacking[0] == 'protegido' else 'Ausente' }}
-                                    — Evita que o site seja carregado dentro de um iframe malicioso.
+                                    Proteção contra <span class="termo-chave">clickjacking</span>
+                                    {{ 'presente.' if headers_detalhes.clickjacking[0] == 'protegido' else 'ausente.' }}
+                                    Evita que o site seja carregado dentro de um iframe malicioso, protegendo você de interagir com outra página sem perceber.
                                 </p>
                                 <p>
-                                    <strong>X-Content-Type-Options:</strong>
-                                    {{ 'Presente' if headers_detalhes.xcto[0] == 'presente' else 'Ausente' }}
-                                    — Impede que o navegador interprete arquivos com um tipo diferente do declarado.
+                                    <span class="termo-chave">X-Content-Type-Options</span>
+                                    {{ 'presente.' if headers_detalhes.xcto[0] == 'presente' else 'ausente.' }}
+                                    Impede que o navegador interprete arquivos com um tipo diferente do declarado. Sem isso, um arquivo disfarçado de imagem poderia ser executado como script.
                                 </p>
                                 <p>
-                                    <strong>Referrer-Policy:</strong>
-                                    {{ 'Presente' if headers_detalhes.referrer_policy[0] == 'presente' else 'Ausente' }}
-                                    — Controla quais informações de origem são enviadas ao navegar para outros sites.
+                                    <span class="termo-chave">Referrer-Policy</span>
+                                    {{ 'presente.' if headers_detalhes.referrer_policy[0] == 'presente' else 'ausente.' }}
+                                    Controla quais informações da página anterior são enviadas ao navegar para outros sites.
                                 </p>
                                 <p>
-                                    <strong>Permissions-Policy:</strong>
-                                    {{ 'Presente' if headers_detalhes.permissions_policy[0] == 'presente' else 'Ausente' }}
-                                    — Restringe o uso de recursos do navegador (câmera, microfone, geolocalização, etc).
+                                    <span class="termo-chave">Permissions-Policy</span>
+                                    {{ 'presente.' if headers_detalhes.permissions_policy[0] == 'presente' else 'ausente.' }}
+                                    Restringe o uso de recursos do navegador (câmera, microfone, geolocalização, etc).
                                 </p>
                             </div>
                         </details>
                     </div>
 
-                    <!-- INFOS BÁSICAS -->
+                    <!-- INFOS DO SERVIDOR -->
                     <div class="check {{ 'positivo' if pontos_servidor >= 5 else 'negativo' }}">
                         <details>
                             <summary style="cursor: pointer; outline: none;">
                                 <span class="simbolo">{{ '✓' if pontos_servidor >= 5 else '✗' }}</span>
-                                Informações do Servidor: {{ pontos_servidor }}/10 pontos
-                                <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 5px;">(Clique para saber mais)</span>
+                                {{ 'Servidor não expõe informações sensíveis' if pontos_servidor >= 5 else 'Servidor expõe informações sensíveis' }}
+                                <span class="seta">▼</span>
                             </summary>
 
-                            <div class="explicao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
+                            <div class="explicacao-conteudo" style="margin-top: 8px; padding-left: 15px; font-size: 0.9rem; line-height: 1.4; opacity: 0.9;">
                                 <p>
-                                    <strong>Header Server:</strong>
-                                    {{ servidor_detalhes.server_header[1] if servidor_detalhes.server_header[1] else 'Não informado' }}
-                                    {% if servidor_detalhes.server_header[0] == 'exposto' %}
-                                        — Expõe a versão do software rodando no servidor, o que pode facilitar ataques direcionados a vulnerabilidades conhecidas dessa versão.
+                                    <span class="termo-chave">Header Server</span> -
+                                    {{ servidor_detalhes.server_header[1] if servidor_detalhes.server_header[1] else 'não informado' }}
+                                    {% if servidor_detalhes.server_header[0] == 'exposto.' %}
+                                        revela a versão do software rodando no servidor, o que pode facilitar ataques direcionados a vulnerabilidades conhecidas dessa versão.
                                     {% else %}
-                                        — Não expõe detalhes de versão, o que é uma boa prática de segurança.
+                                        não expõe detalhes de versão, o que é uma boa prática de segurança.
                                     {% endif %}
                                 </p>
                                 <p>
-                                    <strong>X-Powered-By:</strong>
+                                    <span class="termo-chave">X-Powered-By</span>
                                     {% if servidor_detalhes.x_powered_by[0] == 'exposto' %}
-                                        {{ servidor_detalhes.x_powered_by[1] }} — Revela a tecnologia por trás do site, aumentando a superfície de ataque.
+                                        {{ servidor_detalhes.x_powered_by[1] }} — Revela a tecnologia por trás do site, facilitando o ataque de alguém mal-intencionado.
                                     {% else %}
-                                        Não presente — boa prática, reduz informações disponíveis para um atacante.
+                                        não presente — boa prática, reduz informações disponíveis para um atacante.
                                     {% endif %}
                                 </p>
                             </div>
