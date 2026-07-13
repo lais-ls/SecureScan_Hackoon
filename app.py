@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import requests
+import socket
 
 from dotenv import load_dotenv
 import os
@@ -10,6 +11,18 @@ API_KEY = os.getenv("GOOGLE_API_KEY")
 app = Flask(__name__)
 
 app.secret_key = "chaveSecreta"
+
+def dominio_existe(url):
+    try:
+        if not url.startswith(("http://", "https://")):
+            url = "https://" + url
+        dominio = urlparse(url).netloc
+        socket.gethostbyname(dominio)
+        return True
+    except socket.gaierror:
+        return False
+    except Exception:
+        return True
 
 def verificar_safe_browsing(url): #safe browsing
     endpoint = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={API_KEY}"
@@ -325,6 +338,14 @@ def analisar():
     url = request.form.get("url", "").strip()
     if not url:
         return redirect(url_for("home"))
+    
+    if not dominio_existe(url):
+        return render_template(
+            "index.html",
+            erro_dominio=True,
+            url_analisada=url,
+            historico=session.get("historico", [])
+        )
 
     historico = session.get("historico", []) # começo do histórico
     if url in historico:
