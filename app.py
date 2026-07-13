@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 import requests
 
 from dotenv import load_dotenv
@@ -33,7 +33,7 @@ def verificar_safe_browsing(url): #safe browsing
         }
     }
 
-    response = requests.post(endpoint, json=payload)
+    response = requests.post(endpoint, json=payload, timeout=5)
     result = response.json()
 
     if "matches" in result:
@@ -42,14 +42,20 @@ def verificar_safe_browsing(url): #safe browsing
         return "seguro"
     
 def verificar_https(url):
-    if not url.startswith(("http://", "https://")):
+    url = url.strip()
+    url_teste = url.lower()
+
+    if not url_teste.startswith(("http://", "https://")):
         url = "https://" + url
-    elif url.startswith("http://"):
-        url = url.replace("http://", "https://")
+    elif url_teste.startswith("http://"):
+        url = "https://" + url[7:]
+
     try:
-        # verify=True garante que o python valide se o certificado SSL realmente funciona
         resposta = requests.get(url, timeout=5)
-        return "ativo" if resposta.url.startswith("https://") else "inativo"
+        if resposta.url.startswith("https://"):
+            return "ativo"
+        else:
+            return "inativo"
     except:
         return "inativo"
     
@@ -134,7 +140,7 @@ def verificar_certificado(url):
     except socket.gaierror:
         return "dominio_inexistente", None, None
 
-    except ConnectionRefusedError:
+    except (ConnectionRefusedError, socket.timeout):
         return "sem_ssl", None, None
 
     except Exception as e:
@@ -295,7 +301,9 @@ def home():
 
 @app.route("/analisar", methods=["POST"]) #recebe url, testa segurança e mostra o resultado
 def analisar():
-    url = request.form["url"]
+    url = request.form.get("url", "").strip()
+    if not url:
+        return redirect(url_for("home"))
 
     historico = session.get("historico", []) # começo do histórico
     if url in historico:
