@@ -16,7 +16,7 @@ O sistema realiza uma varredura em tempo real para analisar os seguintes critér
 * **Google Safe Browsing:** Verifica se o domínio está listado como ameaça ou phishing.
 * **Presença de HTTPS:** Valida se o site utiliza protocolo de navegação segura.
 * **Certificado SSL:** Checa a validade do certificado de segurança.
-* **Idade do Domínio (WHOIS):** Identifica há quantos anos o domínio está registrado.
+* **Idade do Domínio (RDAP):** Identifica há quantos anos o domínio está registrado.
 * **Headers de Segurança:** Analisa a presença de cabeçalhos de proteção essenciais (como HSTS, X-Frame-Options, etc.).
 * **Informações do Servidor:** Verifica se o servidor expõe dados sensíveis.
 
