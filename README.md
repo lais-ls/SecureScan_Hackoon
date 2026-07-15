@@ -4,6 +4,12 @@ O **SecureScan** é uma ferramenta web desenvolvida em Python e Flask que analis
 
 ---
 
+## 🚀 Preview do Projeto
+
+![Preview](static/img/preview.jpeg)
+
+---
+
 ## 🚀 Funcionalidades
 
 O sistema realiza uma varredura em tempo real para analisar os seguintes critérios:
@@ -21,7 +27,7 @@ O sistema realiza uma varredura em tempo real para analisar os seguintes critér
 Para o desenvolvimento deste projeto, utilizamos o seguinte conjunto de tecnologias:
 
 - **Backend:** ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat-square&logo=flask&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=flat-square&logo=python&logoColor=ffdd54)
-- **Frontend:** HTML5, CSS3 
+- **Frontend:** ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=flat-square&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=flat-square&logo=css3&logoColor=white) 
 
 ---
 
@@ -59,6 +65,12 @@ python app.py
 Após rodar o comando, abra o seu navegador e acesse:
 
 👉 `http://127.0.0.1:5000`
+
+---
+
+## 💻 Link de Acesso para o Site 
+
+👉 https://securescanvs.vercel.app/
 
 ---
 
