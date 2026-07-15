@@ -4,7 +4,7 @@ O **SecureScan** é uma ferramenta web desenvolvida em Python e Flask que analis
 
 ---
 
-## 🚀 Preview do Projeto
+## 🖥️ Preview do Projeto
 
 ![Preview](static/img/preview.jpeg)
 
@@ -68,7 +68,7 @@ Após rodar o comando, abra o seu navegador e acesse:
 
 ---
 
-## 💻 Link de Acesso para o Site 
+## 🌐 Link de Acesso para o Site 
 
 👉 https://securescanvs.vercel.app/
 
