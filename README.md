@@ -75,5 +75,5 @@ Após rodar o comando, abra o seu navegador e acesse:
 ---
 
 ## 👥 Desenvolvedoras
-- Laís Silva 
-- Yasmin dos Anjos
+- [Laís Silva](https://github.com/lais-ls)
+- [Yasmin dos Anjos](https://github.com/yadosanjos)
