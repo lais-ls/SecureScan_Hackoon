@@ -21,7 +21,7 @@ O sistema realiza uma varredura em tempo real para analisar os seguintes critér
 Para o desenvolvimento deste projeto, utilizamos o seguinte conjunto de tecnologias:
 
 - **Backend:** ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat-square&logo=flask&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=flat-square&logo=python&logoColor=ffdd54)
-- **Frontend:** HTML5, CSS3 (com layout responsivo, sistema de acordeão e barra de pontos).
+- **Frontend:** HTML5, CSS3 
 
 ---
 
@@ -31,7 +31,7 @@ Siga os passos abaixo para colocar o SecureScan para rodar na sua máquina local
 
 ### 1. Clonar o repositório
 ```
-git clone [https://github.com/seu-usuario/securescan.git](https://github.com/seu-usuario/securescan.git)
+git clone https://github.com/yadosanjos/SecureScan_Hackoon.git
 cd securescan
 ```
 
